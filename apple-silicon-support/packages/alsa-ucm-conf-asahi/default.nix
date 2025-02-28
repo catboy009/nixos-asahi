@@ -1,19 +1,20 @@
-{ lib
-, fetchFromGitHub
-, alsa-ucm-conf }:
+{ lib, fetchFromGitHub, alsa-ucm-conf }:
 
-(alsa-ucm-conf.overrideAttrs (oldAttrs: rec {
-  version = "6";
+(alsa-ucm-conf.overrideAttrs (oldAttrs:
+  let
+    versionAsahi = "5";
 
-  src_asahi = fetchFromGitHub {
-    # tracking: https://src.fedoraproject.org/rpms/alsa-ucm-asahi
-    owner = "AsahiLinux";
-    repo = "alsa-ucm-conf-asahi";
-    rev = "v${version}";
-    hash = "sha256-xTCGBohJz+VbHUvEoT3upwD8c+mSo2l7zncA1VIpZKg=";
-  };
-  
-  postInstall = oldAttrs.postInstall or "" + ''
-    cp -r ${src_asahi}/ucm2 $out/share/alsa
-  '';
-}))
+    srcAsahi = fetchFromGitHub {
+      # tracking: https://src.fedoraproject.org/rpms/alsa-ucm-asahi
+      owner = "AsahiLinux";
+      repo = "alsa-ucm-conf-asahi";
+      rev = "v${versionAsahi}";
+      hash = "sha256-daUNz5oUrPfSMO0Tqq/WbtiLHMOtPeQQlI+juGrhTxw=";
+    };
+  in {
+    name = "${oldAttrs.pname}-${oldAttrs.version}-asahi-${versionAsahi}";
+
+    postInstall = oldAttrs.postInstall or "" + ''
+      cp -r ${srcAsahi}/ucm2 $out/share/alsa
+    '';
+  }))
